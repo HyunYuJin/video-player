@@ -57,6 +57,11 @@
         document.addEventListener('keyup', onKeyup)
     }
 
+    // const keyCode = {
+    //     RIGHT: 39,
+    //     LEFT: 37
+    // }
+
     function onKeyup(event) {
         const keyCode = event.keyCode
         const currentTime = DOM.video.currentTime
