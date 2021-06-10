@@ -1,0 +1,179 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 0;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.video-container {
+    position: relative;
+    width: 90%;
+    height: 480px;
+    background-color: #000;
+    margin: 80px auto 0;
+    border-radius: 6px;
+    box-shadow: 0 9px 0 rbga(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.video-container.transition-in .video-controls {
+    opacity: 1;
+}
+
+.video-container.transition-out .video-controls {
+    opacity: 0;
+}
+
+.video-player video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+/* mobile에서 controler 없애기 */
+.video-player video::-webkit-media-controls {
+    display: none !important;
+}
+
+.video-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    z-index: 2147483647;
+    padding-top: 40px;
+    transition: opacity 0.25s ease-out;
+    will-change: opacity; /* gpu를 쓰겠다! 보통은 cpu에서 처리를 해준다. 스타일은 그래서 걔한테 일을 맡김으로 써 더 빠르게 처리한다. - opacity(보통은 transfrom에 많이 쓴다 60 프레임을 보장해야하기 때문에)를 줄거야! 하고 브라우저에게 힌트를 주는 것이다. */
+    /* will-change가 나오기 전에는 transform: translate3d(0, 0, 0); 을 썼었다.*/
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0, rgba(0, 0, 0, 0.35) 60%, transparent);
+}
+
+.video-seek {
+    position: relative;
+    flex: 1 100%;
+    margin: 0 15px;
+    cursor: pointer;
+}
+
+.video-seek .video-time {
+    display: flex;
+    justify-content: space-between;
+    flex: 1 100%;
+    overflow: hidden;
+    padding-top: 18px;
+    cursor: default;
+}
+
+.video-seek .video-time span {
+    font-size: 13px;
+    color: #FFF;
+}
+
+.video-seek .video-progress {
+    padding: 10px 0 8px 0;
+}
+
+.video-seek .progress-track {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.video-seek .progress-filled {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FEC401;
+    transform: scaleX(0%);
+    transform-origin: 0 0 0;
+}
+
+.video-seek .progress-cursor {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    transform: translate(-50%, -5px);
+    border-radius: 50%;
+    opacity: 0%;
+    transition: opacity 0.15s;
+    background-color: #FFF;
+}
+
+.video-seek:hover .progress-cursor {
+    opacity: 1;
+}
+
+.video-controls .video-button-left {
+    display: flex;
+    align-items: center;
+    padding: 0 0 10px 10px;
+}
+
+.video-controls button:hover {
+    color: #FEC401;
+}
+
+.video-controls button {
+    width: 30px;
+    height: 30px;
+    color: #FFF;
+}
+
+.video-controls button svg {
+    display: none;
+}
+
+.video-controls button.play svg:first-child,
+.video-controls button.mute svg:first-child,
+.video-controls button.fullscreen svg:first-child {
+    display: block;
+}
+
+.video-controls button.pause svg:last-child,
+.video-controls button.unmute svg:last-child,
+.video-controls button.unfullscreen svg:last-child {
+    display: block;
+}
+
+.video-controls .video-button-left .volumebar {
+    width: 100px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, .4);
+    background-image: linear-gradient(#fec401, #fec401);
+    background-size: 50% 100%;
+    background-repeat: no-repeat;    
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    margin: 0 5px;
+}
+
+.video-controls .video-button-left .volumebar::-webkit-slider-runnable-track {
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    -webkit-appearance: none;
+}
+
+.video-controls .video-button-left .volumebar::-webkit-slider-thumb {
+    width: 4px;
+    height: 12px;
+    margin-top: 1px;
+    border: 0;
+    background: #fff;
+    box-shadow: 0 0 1px 0px rgba(0,0,0,0.1);
+    -webkit-appearance: none;
+}
