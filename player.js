@@ -17,7 +17,8 @@
         totalTime: document.getElementById('totalTime'),
         volume: document.getElementById('volume'),
         progressFilled: document.getElementById('progressFilled'),
-        progressCursor: document.getElementById('progressCursor')
+        progressCursor: document.getElementById('progressCursor'),
+        progress: document.getElementById('progress')
     }
 
     let isPlaying = false // 재생 상태
@@ -25,6 +26,8 @@
     let isFullScreen = false // 전체화면 상태
 
     let isMouseover = false
+    let isDragging = false
+    let mouseTimer = 0
 
     function init() {
         initEvents()
@@ -42,8 +45,76 @@
         // input(마우스 움직이는 내내 계속)는 keyup, change(마우스 놨을 때) 대신에 요즘 많이 사용된다.
         DOM.volume.addEventListener('input', updateVolumn)
         
+        // controls 위에 올라오면 다시 이벤트 걸어줘서 보여지게 한다.
+        DOM.controls.addEventListener('mouseenter', onMouseenter)
         DOM.container.addEventListener('mouseenter', onMouseenter)
         DOM.container.addEventListener('mouseleave', onMouseleave)
+        
+        DOM.progress.addEventListener('mousedown', handleTimeupdate)
+        document.addEventListener('mousemove', onMousemove)
+        document.addEventListener('mouseup', onMouseup)
+        
+        document.addEventListener('keyup', onKeyup)
+    }
+
+    function onKeyup(event) {
+        const keyCode = event.keyCode
+        const currentTime = DOM.video.currentTime
+        
+        switch (keyCode) {
+            // 앞으로가기
+            case 39:
+                DOM.video.currentTime = currentTime + 5
+            break
+
+            // 뒤로 가기
+            case 37:
+                DOM.video.currentTime = currentTime - 5
+            break
+        }
+    }
+
+    function onMouseObservation(event) {
+        clearTimeout(mouseTimer) // 마우스 움직이는 동안에는 clearTimeout (debounce기법)
+
+        const target = event.target.closest('.video-controls')
+        if (target === null) {
+            mouseTimer = setTimeout(() => {
+                onMouseleave()
+            }, 2000)
+        }
+    }
+
+    function handleTimeupdate(event) {
+        const rect = DOM.progress.getBoundingClientRect()
+
+        isDragging = true
+
+        let currentTime = (event.clientX - rect.left) / rect.width * DOM.video.duration
+        currentTime = Math.min(Math.max(currentTime, 0), DOM.video.duration) // 드래그 커서의 최대, 최소 값 정해주기
+
+        // 문서의 x에서 현재 progress의 위치만큼 빼준다.
+        DOM.video.currentTime = currentTime
+
+        onTimeupdate() // ui 바로바로 업데이트
+
+        DOM.progress.classList.add('is-dragging')
+    }
+
+    function onMousemove(event) {
+        if (isDragging) {
+            handleTimeupdate(event)
+        }
+
+        onMouseObservation(event)
+    }
+
+    function onMouseup() {
+        // 드래그하다가 mouseup!!
+        isDragging = false
+        DOM.progress.removeEventListener('mousemove', onMousemove)
+
+        DOM.progress.classList.remove('is-dragging')
     }
 
     function onMouseenter() {
@@ -57,7 +128,7 @@
     
     function onMouseleave() {
         isMouseover = false
-        if (isPlaying) {
+        if (isPlaying && !isDragging) {
             DOM.container.classList.remove('transition-in')
             DOM.container.classList.add('transition-out')
         }
@@ -76,7 +147,7 @@
 
     function onTimeupdate() {
         // 마우스 올렸을 때만 update
-        if (isMouseover) {
+        if (isMouseover || isDragging) {
             updateTimeDisplay()
             updateProgressFilled()
             updateProgressCursor()

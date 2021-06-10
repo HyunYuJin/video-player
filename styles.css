@@ -21,6 +21,7 @@ button {
     border-radius: 6px;
     box-shadow: 0 9px 0 rbga(0, 0, 0, 0.15);
     overflow: hidden;
+    user-select: none; /* text select를 막아준다. */
 }
 
 .video-container.transition-in .video-controls {
@@ -112,6 +113,7 @@ button {
     background-color: #FFF;
 }
 
+.video-progress.is-dragging .progress-cursor,
 .video-seek:hover .progress-cursor {
     opacity: 1;
 }
